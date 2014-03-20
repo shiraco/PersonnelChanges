@@ -1,6 +1,5 @@
 Attribute VB_Name = "ConcurrentPostTableConverter"
 
-
 Option Explicit
 
 '
@@ -8,10 +7,15 @@ Option Explicit
 ' 兼務数は3まで対応
 '
 ' author koji shiraishi
-' since 2014/03/12
+' since 2014/03/20
 '
 Sub ConvertConcurrentPostTable()
 
+    
+    '=======================================================================================================
+    ' 初期設定
+    '=======================================================================================================
+    
     ' Excelテーブルの範囲の定義
     Dim source_table As Range
     Dim target_table As Range
@@ -31,7 +35,7 @@ Sub ConvertConcurrentPostTable()
     Const COL_S_SUFFIX_START As Integer = 16  ' 新他社出向先
     Const COL_S_SUFFIX_END As Integer = 18    ' 新出向割合
 
-    ' COL_S_* は target_table （変換後テーブル）での列位置
+    ' COL_T_* は target_table （変換後テーブル）での列位置
     Const COL_T_UNIFY_A As Integer = 3        ' 新所属
     Const COL_T_UNIFY_B As Integer = 4        ' 新所属組織長
 
@@ -55,7 +59,11 @@ Sub ConvertConcurrentPostTable()
     Dim ConcurrentPosts  As Integer
     ConcurrentPosts = 0
 
+    
+    '=======================================================================================================
     ' main 処理
+    '=======================================================================================================
+    
     Application.ScreenUpdating = False ' 描画OFF
 
     For r = 1 To source_table.Rows.Count
@@ -156,22 +164,28 @@ Sub ConvertConcurrentPostTable()
         target_r = target_r + 1
     Next
 
-    ' 条件付書式をクリア＆設定
-    Set target_table = Range("target_table") ' target_table を拡張された領域を含めて再定義
-    target_table.ListObject.Range.FormatConditions.Delete ' 条件付書式クリア
+    
+    '=======================================================================================================
+    ' 書式の設定
+    '=======================================================================================================
+    
+    ' 【target_tableの書式の初期化】条件付書式をクリア＆設定
+    Set target_table = Range("target_table") ' target_table が拡張されているので、改めて定義する
+    target_table.ListObject.Range.FormatConditions.Delete ' 既に条件付書式が定義されていたら、条件付書式をクリアする
 
-    ' その行の社員列が（空白であれば）その行の上側の罫線を無くす
+    ' 【兼務行の全体（全列）の書式設定】その行の社員列が（空白であれば）その行の上側の罫線を無くす
     With target_table.FormatConditions.Add(Type:=xlExpression, Formula1:="=ISBLANK($A2)")
         .Borders(xlTop).LineStyle = xlNone
     End With
 
+    ' 【兼務行の所属列の書式設定】
     ' target_table の最終位置のインデックスを取得 (last_target_r, last_tareget_c)
     Dim last_target_r As Integer
     last_target_r = target_r - 1
 
-    ' 所属＆所属長列に関しては、条件付書式クリア（Cells 直指定なのでヘッダー行分の +1 する）
+    ' 所属列に関しては、条件付書式クリア
     ' その行の社員列が（空白であれば）その行の上側の罫線を無くす
-    With Range(Cells(1 + 1, COL_T_UNIFY_A), Cells(last_target_r + 1, COL_T_UNIFY_B))
+    With target_table.Range(Cells(1, COL_T_UNIFY_A), Cells(last_target_r, COL_T_UNIFY_B))
         .FormatConditions.Delete
         .FormatConditions.Add(Type:=xlExpression, Formula1:="=ISBLANK($A2)").Borders(xlTop).LineStyle = xlDot
     End With
@@ -181,7 +195,7 @@ Sub ConvertConcurrentPostTable()
 End Sub
 
 '
-' 指定したCell (Range) に引数の文字列（ラベル）を右寄せした上でセットする
+' 指定したCell (Range) に引数の文字列（ラベル）を右寄せした上でセットするサブルーチン
 '
 Sub SetConcurrentPostsLabel(target As Range, label As String)
 
@@ -191,4 +205,5 @@ Sub SetConcurrentPostsLabel(target As Range, label As String)
     End With
 
 End Sub
+
 
