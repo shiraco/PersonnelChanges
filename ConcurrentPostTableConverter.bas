@@ -17,18 +17,18 @@ Sub ConvertConcurrentPostTable()
     '=======================================================================================================
 
     ' 【debug】処理時間の計測start
-    Dim StartTime, StopTime As Variant
-    StartTime = Time 'ここから実行時間のカウントを開始します
+    Dim startTime, stopTime As Variant
+    startTime = Time 'ここから実行時間のカウントを開始します
 
     ' Excelテーブルの範囲の定義
-    Dim source_table As Range
-    Dim target_table As Range
+    Dim sourceTable As Range
+    Dim targetTable As Range
 
     ' それぞれの列の位置（インデックス）を定数（Const）として定義
-    ' COL_S_* は source_table （変換前テーブル）での列位置
+    ' COL_S_* は sourceTable （変換前テーブル）での列位置
     Const COL_S_COMMON_PREFIX_START As Integer = 1 ' 社員番号
-    Const COL_S_COMMON_PREFIX_END As Integer = 2   ' 新所属略称
-    
+    Const COL_S_COMMON_PREFIX_END As Integer = 4   ' 新所属略称
+
     Const COL_S_AFT_PREFIX_START As Integer = 5   ' 新所属
     Const COL_S_AFT_PREFIX_END As Integer = 9     ' 新事業所
 
@@ -42,39 +42,37 @@ Sub ConvertConcurrentPostTable()
     Const COL_S_AFT_SUFFIX_START As Integer = 16  ' 新他社出向先
     Const COL_S_AFT_SUFFIX_END As Integer = 18    ' 新出向割合
 
-    'COL_T_* は target_table （変換後テーブル）での列位置
+    'COL_T_* は targetTable （変換後テーブル）での列位置
     Const COL_T_AFT_UNIFY_A As Integer = 3        ' 新所属
     Const COL_T_AFT_UNIFY_B As Integer = 4        ' 新所属組織長
 
     ' Dim COL_S_SKIPS As Variant                ' スキップ対象の列（定数ではないけど、変更しないので大文字で宣言）
     ' COL_S_SKIPS = Array(3, 4, 6, 7, 17, 18)   ' 表示順、新本務、新グレード 、新職種、新他社略称、新出向割合
 
-
     ' Excel にあらかじめ "source_table", "target_table" という名前でテーブルを定義しておく
-    Set source_table = Range("source_table")
-    Set target_table = Range("target_table")
+    Set sourceTable = Range("source_table")
+    Set targetTable = Range("target_table")
 
-    ' source_table上の読込インデックス位置 (r, c)
+    ' sourceTable上の読込インデックス位置 (r, c)
     Dim r, c As Long
 
-    ' target_table上の書込インデックス位置 (target_r, tareget_c)
+    ' targetTable上の書込インデックス位置 (target_r, tareget_c)
     Dim target_r, target_c As Long
     target_r = 1
     target_c = 1
 
     ' その人の新兼務数（本務除く）
-    Dim ConcurrentPosts, BefAftMaxConcurrentPosts  As Integer
-    ConcurrentPosts = 0
-    BefAftMaxConcurrentPosts = 0
-    
+    Dim concurrentPosts As Integer
+    concurrentPosts = 0
+
     '=======================================================================================================
     ' main 処理
     '=======================================================================================================
-    
+
     Application.ScreenUpdating = False ' 描画OFF
 
-    For r = 1 To source_table.Rows.Count
-        For c = 1 To source_table.Columns.Count
+    For r = 1 To sourceTable.Rows.Count
+        For c = 1 To sourceTable.columns.Count
 
             ' スキップ対象の列であれば何もしない
             ' 配列（COL_S_SKIPS）との比較の仕方がわからないので、べた書き
@@ -86,36 +84,36 @@ Sub ConvertConcurrentPostTable()
                 '----------------------------------------------------
                 ' common's field
                 '----------------------------------------------------
-                
+
                 If COL_S_COMMON_PREFIX_START <= c And c <= COL_S_COMMON_PREFIX_END Then
-                    target_table(target_r, target_c) = source_table(r, c)
+                    targetTable(target_r, target_c) = sourceTable(r, c)
 
 
                 '----------------------------------------------------
                 ' after's field
                 '----------------------------------------------------
-                
+
                 ' prefix field
                 ElseIf COL_S_AFT_PREFIX_START <= c And c <= COL_S_AFT_PREFIX_END Then
-                    target_table(target_r, target_c) = source_table(r, c)
-                
+                    targetTable(target_r, target_c) = sourceTable(r, c)
+
                 ' 新兼務1所属
                 ElseIf c = COL_S_AFT_REPEAT_1A Then
                     target_r = target_r + 1
                     target_c = target_c - 3
 
-                    If source_table(r, c) <> "" Then
-                        ConcurrentPosts = 1
+                    If sourceTable(r, c) <> "" Then
+                        concurrentPosts = 1
 
-                        Call SetConcurrentPostLabel(target_table(target_r, target_c - 1), "（兼務１）")
-                        Call SetConcurrentPost(target_table(target_r, target_c), source_table(r, c))
+                        Call SetConcurrentPostLabel(targetTable(target_r, target_c - 1), "（兼務１）")
+                        Call SetConcurrentPost(targetTable(target_r, target_c), sourceTable(r, c))
 
                     End If
 
                 ' 新兼務1所属長
                 ElseIf c = COL_S_AFT_REPEAT_1B Then
-                    If ConcurrentPosts >= 1 Then
-                        target_table(target_r, target_c) = source_table(r, c)
+                    If concurrentPosts >= 1 Then
+                        targetTable(target_r, target_c) = sourceTable(r, c)
                     End If
 
                     target_r = target_r - 1
@@ -126,17 +124,17 @@ Sub ConvertConcurrentPostTable()
                     target_r = target_r + 2
                     target_c = target_c - 3
 
-                    If source_table(r, c) <> "" Then
-                        ConcurrentPosts = 2
+                    If sourceTable(r, c) <> "" Then
+                        concurrentPosts = 2
 
-                        Call SetConcurrentPostLabel(target_table(target_r, target_c - 1), "（兼務２）")
-                        Call SetConcurrentPost(target_table(target_r, target_c), source_table(r, c))
+                        Call SetConcurrentPostLabel(targetTable(target_r, target_c - 1), "（兼務２）")
+                        Call SetConcurrentPost(targetTable(target_r, target_c), sourceTable(r, c))
                     End If
 
                 ' 新兼務2所属長
                 ElseIf c = COL_S_AFT_REPEAT_2B Then
-                    If ConcurrentPosts >= 2 Then
-                        target_table(target_r, target_c) = source_table(r, c)
+                    If concurrentPosts >= 2 Then
+                        targetTable(target_r, target_c) = sourceTable(r, c)
                     End If
 
                     target_r = target_r - 2
@@ -147,17 +145,17 @@ Sub ConvertConcurrentPostTable()
                     target_r = target_r + 3
                     target_c = target_c - 3
 
-                    If source_table(r, c) <> "" Then
-                        ConcurrentPosts = 3
+                    If sourceTable(r, c) <> "" Then
+                        concurrentPosts = 3
 
-                        Call SetConcurrentPostLabel(target_table(target_r, target_c - 1), "（兼務３）")
-                        Call SetConcurrentPost(target_table(target_r, target_c), source_table(r, c))
+                        Call SetConcurrentPostLabel(targetTable(target_r, target_c - 1), "（兼務３）")
+                        Call SetConcurrentPost(targetTable(target_r, target_c), sourceTable(r, c))
                     End If
 
                 ' 新兼務3所属長
                 ElseIf c = COL_S_AFT_REPEAT_3B Then
-                    If ConcurrentPosts >= 3 Then
-                       target_table(target_r, target_c) = source_table(r, c)
+                    If concurrentPosts >= 3 Then
+                       targetTable(target_r, target_c) = sourceTable(r, c)
                     End If
 
                     target_r = target_r - 3
@@ -165,7 +163,7 @@ Sub ConvertConcurrentPostTable()
 
                 ' suffix field
                 ElseIf COL_S_AFT_SUFFIX_START <= c And c <= COL_S_AFT_SUFFIX_END Then
-                    target_table(target_r, target_c) = source_table(r, c)
+                    targetTable(target_r, target_c) = sourceTable(r, c)
 
                 End If
 
@@ -183,35 +181,35 @@ Sub ConvertConcurrentPostTable()
         target_r = target_r + 1               ' 行移動（通常分）
         target_r = target_r + concurrentPosts ' 行移動（兼務数分の加算）
         concurrentPosts = 0
-        
+
     Next
 
     '=======================================================================================================
     ' 書式の設定
     '=======================================================================================================
 
-    ' 【target_tableの書式の初期化】条件付書式をクリア＆設定
-    Set target_table = Range("target_table") ' target_table が拡張されているので、改めて定義する
-    With target_table.ListObject.Range
+    ' 【targetTableの書式の初期化】条件付書式をクリア＆設定
+    Set targetTable = Range("target_table") ' targetTable が拡張されているので、改めて定義する
+    With targetTable.ListObject.Range
         .FormatConditions.Delete      ' 既に条件付書式が定義されていたら、条件付書式をクリアする
     End With
 
     ' 【兼務行の全体（全列）の書式設定】その行の社員列が（空白であれば）その行の上側の罫線を無くす
-    With target_table.FormatConditions.Add(Type:=xlExpression, Formula1:="=ISBLANK($A4)")
+    With targetTable.FormatConditions.Add(Type:=xlExpression, Formula1:="=ISBLANK($A4)")
         .Borders(xlTop).LineStyle = xlLineStyleNone
     End With
 
     ' 【兼務行の所属列の書式設定】
     ' 所属列に関しては、その行の社員列が（空白であれば）その行の上側の罫線を点線にする
-    Call SetConcurrentPostFormatConditions(target_table.Columns(COL_T_AFT_UNIFY_A), "$A4")
-    Call SetConcurrentPostFormatConditions(target_table.Columns(COL_T_AFT_UNIFY_B), "$A4")
+    Call SetConcurrentPostFormatConditions(targetTable.columns(COL_T_AFT_UNIFY_A), "$A4")
+    Call SetConcurrentPostFormatConditions(targetTable.columns(COL_T_AFT_UNIFY_B), "$A4")
 
     Application.ScreenUpdating = True ' 描画ON
 
     ' 【debug】処理時間の計測end
-    StopTime = Time
-    StopTime = StopTime - StartTime
-    MsgBox "所要時間は" & Minute(StopTime) & "分" & Second(StopTime) & "秒 でした"
+    stopTime = Time
+    stopTime = stopTime - startTime
+    MsgBox "所要時間は" & Minute(stopTime) & "分" & Second(stopTime) & "秒 でした"
 
 End Sub
 
@@ -230,18 +228,18 @@ End Sub
 '
 ' 指定したCell (Range) に所属をインデント付でセットするサブルーチン
 '
-Sub SetConcurrentPost(target As Range, PostName As String)
+Sub SetConcurrentPost(target As Range, postName As String)
 
-     target = "　　" & PostName ' 全角スペース×２でインデント
+     target = "　　" & postName ' 全角スペース×２でインデント
 
 End Sub
 
 '
 ' 指定したColumns (Range) にの条件付書式をセットするサブルーチン
 '
-Sub SetConcurrentPostFormatConditions(Columns As Range, referenceCellStr As String)
-    
-    With Columns
+Sub SetConcurrentPostFormatConditions(columns As Range, referenceCellStr As String)
+
+    With columns
         .FormatConditions.Delete
         .FormatConditions.Add(Type:=xlExpression, Formula1:="=ISBLANK(" & referenceCellStr & ")").Borders(xlTop).LineStyle = xlDot
     End With
