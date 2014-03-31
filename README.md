@@ -44,6 +44,10 @@ http://support.microsoft.com/kb/282830/ja
 * 配布方法について
 Excel 本体に、.bas ファイルを読み込んで、マクロを埋め込んだ上、ThisWorkBook の自動.bas ファイル読み込みマクロを削除（ThisWorkBookの全スクリプトを削除）して配布して下さい。
 
+* このツールのリポジトリ(origin)
+ツールのオリジナルは、以下にあります。
+https://github.com/tech-sketch/PersonnelChanges (private repository)
+
 * 参考記事
 http://d.hatena.ne.jp/language_and_engineering/20090731/p1
 
