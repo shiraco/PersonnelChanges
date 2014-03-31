@@ -40,3 +40,7 @@ http://office.microsoft.com/ja-jp/excel-help/HA101819080.aspx
 リボンの「開発」タブ ＞ [マクロのセキュリティ] ＞[ VBAプロジェクトオブジェクトモデルへのアクセスを信頼する] をオン
 
 http://support.microsoft.com/kb/282830/ja
+
+## 変更履歴
+
+1.0 2014/3/31 初版作成
