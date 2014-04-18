@@ -1,4 +1,4 @@
-Attribute VB_Name = "ConcurrentPostTableConverter"
+Attribute VB_Name = "ConverterForAllEmployees"
 
 Option Explicit
 
@@ -10,7 +10,7 @@ Option Explicit
 ' since 2014/03/31
 ' version 1.0
 '
-Sub ConvertConcurrentPostTable()
+Sub ConvertConcurrentPostTableForAllEmployees()
 
     '=======================================================================================================
     ' èâä˙ê›íË
