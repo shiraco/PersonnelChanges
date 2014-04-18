@@ -36,7 +36,7 @@ Sub ConvertConcurrentPostTableForAllEmployees()
 
     ' パラメータ
     Const STR_SPACE_INDENT As String = "　　"             ' インデント幅を定義
-    Const STR_FIRST_BASE_CELL_ROW As String = "$A4"       ' 書式設定の基準とする最左上のセルからの列参照
+    Const STR_FIRST_BASE_CELL_ROW As String = "$A7"       ' 書式設定の基準とする最左上のセルからの列参照
 
     ' それぞれの列の位置（インデックス）を定数（Const）として定義
     ' COL_S_* は sourceTable （変換前テーブル）での列位置
@@ -220,8 +220,8 @@ Sub ConvertConcurrentPostTableForAllEmployees()
     End With
 
     ' 【所属列の書式設定（その人物における2行目以降）】
-    Call SetConcurrentPostFormatConditions(targetTable.columns(COL_T_NEW_UNIFY1_A), STR_FIRST_BASE_CELL_ROW, "C4")
-    Call SetConcurrentPostFormatConditions(targetTable.columns(COL_T_NEW_UNIFY1_B), STR_FIRST_BASE_CELL_ROW, "C4")
+    Call SetConcurrentPostFormatConditions(targetTable.columns(COL_T_NEW_UNIFY1_A), STR_FIRST_BASE_CELL_ROW, "C7")
+    Call SetConcurrentPostFormatConditions(targetTable.columns(COL_T_NEW_UNIFY1_B), STR_FIRST_BASE_CELL_ROW, "C7")
 
     '=======================================================================================================
     ' 終了処理
