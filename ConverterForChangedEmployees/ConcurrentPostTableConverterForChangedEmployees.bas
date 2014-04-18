@@ -364,6 +364,7 @@ Sub ConvertConcurrentPostTableForChangedEmployees()
                     targetTable(target_r, target_c) = sourceTable(r, c)
 
                 End If
+
                 '----------------------------------------------------
                 ' common process
                 '----------------------------------------------------
@@ -375,7 +376,6 @@ Sub ConvertConcurrentPostTableForChangedEmployees()
 
         ' ‰üsˆ—
         usingRows = IIf(newUsingRows >= oldUsingRows, newUsingRows, oldUsingRows)
-
         target_c = 1                    ' —ñˆÚ“®
         target_r = target_r + usingRows ' sˆÚ“®
 
