@@ -11,7 +11,7 @@ Option Explicit
 '
 ' author koji shiraishi
 ' since 2014/04/21
-' version 1.0
+' version 1.1
 '
 Sub ConvertConcurrentPostTable(sourceReadingType As String)
 
