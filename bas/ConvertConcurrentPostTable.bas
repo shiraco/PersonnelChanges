@@ -10,8 +10,8 @@ Option Explicit
 '  sourceReadingType  "NEW_ONLY": 新所属のみ転記 , "NEW_AND_OLD": 新旧所属両方転記
 '
 ' author koji shiraishi
-' since 2014/04/21
-' version 1.1
+' since 2014/05/02
+' version 1.2
 '
 Sub ConvertConcurrentPostTable(sourceReadingType As String)
 
@@ -85,9 +85,9 @@ Sub ConvertConcurrentPostTable(sourceReadingType As String)
     Const COL_T_NEW_UNIFY1_A As Integer = 6               ' 新所属
     Const COL_T_NEW_UNIFY1_B As Integer = 7               ' 新役職
     Const COL_T_NEW_UNIFY2_A As Integer = 8               ' 新出向先
-    Const COL_T_OLD_UNIFY1_A As Integer = 10              ' 旧所属
-    Const COL_T_OLD_UNIFY1_B As Integer = 11              ' 旧役職
-    Const COL_T_OLD_UNIFY2_A As Integer = 12              ' 旧出向先
+    Const COL_T_OLD_UNIFY1_A As Integer = 11              ' 旧所属
+    Const COL_T_OLD_UNIFY1_B As Integer = 12              ' 旧役職
+    Const COL_T_OLD_UNIFY2_A As Integer = 13              ' 旧出向先
 
     Const CELL_T_NEW_REASON1_STR As String = "A7"         ' 事由名称１
     Const CELL_T_NEW_REASON2_STR As String = "B7"         ' 事由名称２
@@ -95,8 +95,8 @@ Sub ConvertConcurrentPostTable(sourceReadingType As String)
     Const CELL_T_EMPLOYEE_NO_STR As String = "$D7"        ' 社員番号列の最上行
     Const CELL_T_NEW_POST_NAME_STR As String = "F7"       ' 新所属の最上行
     Const CELL_T_NEW_ACOMPANY_NAME_STR As String = "H7"   ' 新出向先の最上行
-    Const CELL_T_OLD_POST_NAME_STR As String = "J7"       ' 旧所属の最上行
-    Const CELL_T_OLD_ACOMPANY_NAME_STR As String = "L7"   ' 旧出向先の最上行
+    Const CELL_T_OLD_POST_NAME_STR As String = "K7"       ' 旧所属の最上行
+    Const CELL_T_OLD_ACOMPANY_NAME_STR As String = "M7"   ' 旧出向先の最上行
 
     '=======================================================================================================
     ' source_table -> target_table への転記処理
@@ -146,7 +146,7 @@ Sub ConvertConcurrentPostTable(sourceReadingType As String)
                COL_S_NEW_REPEAT1_1A < c And c < COL_S_NEW_REPEAT1_1B Or _
                COL_S_NEW_REPEAT1_2A < c And c < COL_S_NEW_REPEAT1_2B Or _
                COL_S_NEW_REPEAT1_3A < c And c < COL_S_NEW_REPEAT1_3B Or _
-               c = 25 Or c = 26 Or c = 27 Or c = 29 Or c = 30 Or c = 31 Or c = 34 Or c = 35 Then
+               c = 25 Or c = 26 Or c = 27 Or c = 29 Or c = 30 Or c = 31 Or c = 34 Then
 
                 'NOP
 
@@ -156,7 +156,7 @@ Sub ConvertConcurrentPostTable(sourceReadingType As String)
                 COL_S_OLD_REPEAT1_1A < c And c < COL_S_OLD_REPEAT1_1B Or _
                 COL_S_OLD_REPEAT1_2A < c And c < COL_S_OLD_REPEAT1_2B Or _
                 COL_S_OLD_REPEAT1_3A < c And c < COL_S_OLD_REPEAT1_3B Or _
-                c = 56 Or c = 57 Or c = 58 Or c = 60 Or c = 61 Or c = 62 Or c = 65 Or c = 66) Then
+                c = 56 Or c = 57 Or c = 58 Or c = 60 Or c = 61 Or c = 62 Or c = 65) Then
 
                 'NOP
 
@@ -484,7 +484,6 @@ Sub SetFormatConditionsTopLineNone(columns As Range, referenceCell1Str As String
 
     With columns
         .FormatConditions.Delete
-        .FormatConditions.Add(Type:=xlExpression, Formula1:="=AND(NOT(ISBLANK(" & referenceCell1Str & ")))").Borders(xlTop).LineStyle = xlContinuous
         .FormatConditions.Add(Type:=xlExpression, Formula1:="=AND(ISBLANK(" & referenceCell1Str & "))").Borders(xlTop).LineStyle = xlNone
     End With
 
